@@ -210,7 +210,7 @@ function offlineMap(){
 }
 function offlineDraw(){
   const root=$('schematic');if(!root)return;
-  const selected=selectedPlaceId?places.filter(p=>p[0]===selectedPlaceId):places.filter(p=>filter==='all'||(filter==='day'?agendaPlaceIds[variant][day].flat().includes(p[0]):['hotel','bund','finish','meeting','support10','support22'].includes(p[0])));
+  const selected=selectedPlaceId?places.filter(p=>p[0]===selectedPlaceId):places.filter(p=>filter==='all'||(filter==='day'?(p[0]==='hotel'||agendaPlaceIds[variant][day].flat().includes(p[0])):['hotel','bund','finish','meeting','support10','support22'].includes(p[0])));
   const all=selected.length?selected:places;
   const lats=all.map(p=>p[4]),lons=all.map(p=>p[5]);
   const lo=Math.min(...lons),hi=Math.max(...lons),la=Math.min(...lats),ha=Math.max(...lats);
@@ -260,7 +260,7 @@ function loadInteractiveMap(){
 // Start loading only after the page is interactive.
 setTimeout(loadInteractiveMap,100);
 
-function draw(){if($('schematic'))offlineDraw();if(!map)return;map.closePopup();layer.clearLayers();let list=selectedPlaceId?places.filter(p=>p[0]===selectedPlaceId):places.filter(p=>filter==='all'||(filter==='day'?agendaPlaceIds[variant][day].flat().includes(p[0]):['hotel','bund','finish','meeting','support10','support22'].includes(p[0])));let bounds=[];list.forEach(p=>{const [id,emoji,name,addr,lat,lon]=p;const icon=L.divIcon({html:`<div class="pin">${emoji}</div>`,iconSize:[28,28],iconAnchor:[14,14]});L.marker([lat,lon],{icon}).bindPopup(`<b>${name}</b><br>${addressHtml(id)}<a href="https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=17/${lat}/${lon}" target="_blank" rel="noopener">Открыть на карте ↗</a>`).addTo(layer);bounds.push([lat,lon])});if(bounds.length)map.fitBounds(bounds,{padding:[24,24],maxZoom:13});}
+function draw(){if($('schematic'))offlineDraw();if(!map)return;map.closePopup();layer.clearLayers();let list=selectedPlaceId?places.filter(p=>p[0]===selectedPlaceId):places.filter(p=>filter==='all'||(filter==='day'?(p[0]==='hotel'||agendaPlaceIds[variant][day].flat().includes(p[0])):['hotel','bund','finish','meeting','support10','support22'].includes(p[0])));let bounds=[];list.forEach(p=>{const [id,emoji,name,addr,lat,lon]=p;const icon=L.divIcon({html:`<div class="pin">${emoji}</div>`,iconSize:[28,28],iconAnchor:[14,14]});L.marker([lat,lon],{icon}).bindPopup(`<b>${name}</b><br>${addressHtml(id)}<a href="https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=17/${lat}/${lon}" target="_blank" rel="noopener">Открыть на карте ↗</a>`).addTo(layer);bounds.push([lat,lon])});if(bounds.length)map.fitBounds(bounds,{padding:[24,24],maxZoom:13});}
 function splits(){const g=+$('goal').value;$('goaltext').textContent=`${Math.floor(g/60)}:${String(g%60).padStart(2,'0')}`;$('splits').innerHTML=[5,10,15,20,22,25,30,35,40,42.195].map(k=>{const minutes=430+g*k/42.195;const m=Math.round(minutes);return `<tr><td>${k===42.195?'🏁 42,195':k} км</td><td>${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}</td></tr>`}).join('')}
 $('goal').oninput=splits;render();splits();draw();
 </script><script>renderAddressDirectory();</script><script>
